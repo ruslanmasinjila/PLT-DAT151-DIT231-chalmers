@@ -1,0 +1,154 @@
+-----------------------------------lab1----------------------------------------
+-------------------------------------------------------------------------------
+PDef.       Program         ::=                                  [Def] ; -- (1)
+terminator  Def 			                            "" ; -- (1)
+
+-------------------------------------------------------------------------------
+
+comment     			                                  "//" ; -- (1)
+comment                                                      "/*" "*/" ; -- (1)
+comment                                                            "#" ; -- (1)
+
+-------------------------------------------------------------------------------
+
+DFun.       Def             ::=    Type Id "(" [Arg] ")" "{" [Stm] "}" ; -- (1)
+separator                   Arg                                    "," ; -- (1)
+terminator  Stm                                                     "" ; -- (1)
+
+DFunEmpty.  Def             ::=              Type Id "(" [Arg] ")" ";" ; -- (6)
+DUsing.     Def             ::=                  "using" QualConst ";" ; -- (3)
+DTypeDef.   Def             ::=                  "typedef" Type Id ";" ; -- (3)
+DVars.      Def             ::=                                Var ";" ;
+
+-------------------------------------------------------------------------------
+
+-- Variables appearing in Argument, Definitions and Statements.
+
+AVTypeId.   ArgVar           ::=                               Type Id ; -- (1)
+AVInit.     ArgVar           ::=                       Type Id "=" Exp ; -- (1)
+AVTConId.   ArgVar           ::=                          TypeConst Id ; -- (4)
+AVConInit.  ArgVar           ::=                  TypeConst Id "=" Exp ; -- (4)
+
+
+-------------------------------------------------------------------------------
+
+
+-- Variables appearing in Definitions and Statements only
+
+rules       Multi            ::=                       Id | Id "=" Exp ;
+IDDecls.    VarOther         ::=                   Type Id "," [Multi] ; -- (3)
+TCDecls.    VarOther         ::=              TypeConst Id "," [Multi] ; -- (3)
+
+IDDecls2.   VarOther         ::=           Type Id "=" Exp "," [Multi] ; -- (3)
+TCDecls2.   VarOther         ::=      TypeConst Id "=" Exp "," [Multi] ; -- (3)
+
+separator nonempty Multi                                           "," ;
+
+-- All Variables
+
+ArgVars.    Var              ::=                                ArgVar ;
+OtherVars.  Var              ::=                              VarOther ;
+
+------------------------------------------------------------------------------
+
+-- All Argument Variables including Type and TypeConst.
+
+AType.      Arg             ::=                                   Type ; -- (1)
+ATConst.    Arg             ::=                              TypeConst ; -- (4)
+AVar.       Arg             ::=                                 ArgVar ; -- (1)
+
+-------------------------------------------------------------------------------
+
+TInt.       Type            ::=                                  "int" ; -- (1)
+TBool.      Type            ::=                                 "bool" ; -- (1)
+TChar.      Type            ::=                                 "char" ; -- (1)
+TDouble.    Type            ::=                               "double" ; -- (1)
+TVoid.      Type            ::=                                 "void" ; -- (1)
+TReferenc.  Type            ::=                               Type "&" ; -- (4)
+TConst.     TypeConst       ::=                           "const" Type ;                 
+
+-------------------------------------------------------------------------------
+
+TQualCon.   Type            ::=                              QualConst ; -- (1)
+
+-------------------------------------------------------------------------------
+
+QualId.     QualConstId     ::=                                     Id ; -- (1)
+QualList.   QualConst       ::=                          [QualConstId] ; -- (1)
+separator   nonempty        QualConstId                           "::" ; -- (1)
+
+-------------------------------------------------------------------------------
+
+SExp.       Stm             ::=                                Exp ";" ; -- (1)
+SReturn.    Stm             ::=                       "return" Exp ";" ; -- (1)
+SVar.       Stm             ::=                                Var ";" ;
+STypeDef.   Stm             ::=                  "typedef" Type Id ";" ; -- (3)
+SWhile.     Stm             ::=                "while" "(" Exp ")" Stm ; -- (3)
+SIf.        Stm             ::=                   "if" "(" Exp ")" Stm ; -- (3)
+SIfElse.    Stm             ::=        "if" "(" Exp ")" Stm "else" Stm ; -- (3)
+SBlock.     Stm             ::=                          "{" [Stm] "}" ; -- (3)
+SFor.       Stm             ::=  "for" "(" Var ";" Exp ";" Exp ")" Stm ; -- (6)
+SConstant.  Stm             ::=                            "const" Stm ; -- (6)
+SDoWhile.   Stm             ::=      "do" Stm  "while" "(" Exp ")" ";" ; -- (6)
+
+separator   nonempty        Id                                     "," ; -- (3)
+
+-------------------------------------------------------------------------------
+
+EInt.       Exp16           ::=                                Integer ; -- (1)
+EDouble.    Exp16           ::=                                 Double ; -- (1)
+EChar.      Exp16           ::=                                   Char ; -- (1)
+EStr.       Exp16           ::=                               [String] ; -- (1)
+EQualCon.   Exp16           ::=                              QualConst ; -- (1)
+
+EFunCall.   Exp15           ::=                    Exp15 "(" [Exp] ")" ; -- (3)
+EIndex.     Exp15           ::=                      Exp15 "[" Exp "]" ; -- (3)
+
+EDot.       Exp14           ::=                        Exp14 "." Exp15 ; -- (3)
+EProject.   Exp14           ::=                       Exp14 "->" Exp15 ; -- (3)
+
+EPostIncr.  Exp14           ::=                             Exp14 "++" ; -- (6)
+EPostDecr.  Exp14           ::=                             Exp14 "--" ; -- (6)
+
+EPreIncr.   Exp13           ::=                             "++" Exp13 ; -- (6)
+EPreDecr.   Exp13           ::=                             "--" Exp13 ; -- (6)
+
+EPtr.       Exp13           ::=                              "*" Exp13 ; -- (6)
+ENot.       Exp13           ::=                              "!" Exp13 ; -- (6)
+
+ETimes.     Exp12           ::=                        Exp12 "*" Exp13 ; -- (3)
+EDiv.       Exp12           ::=                        Exp12 "/" Exp13 ; -- (3)
+EModulo.    Exp12           ::=                        Exp12 "%" Exp13 ; -- (3)
+
+EPlus.      Exp11           ::=                        Exp11 "+" Exp12 ; -- (3)
+EMinus.     Exp11           ::=                        Exp11 "-" Exp12 ; -- (3)
+
+ELeftShft.  Exp10           ::=                       Exp10 "<<" Exp11 ; -- (1)
+ERightShft. Exp10           ::=                       Exp10 ">>" Exp11 ; -- (2)
+
+ELt.        Exp9            ::=                         Exp9 "<" Exp10 ; -- (6)
+EGt.        Exp9            ::=                         Exp9 ">" Exp10 ; -- (6)
+ELtEq.      Exp9            ::=                        Exp9 "<=" Exp10 ; -- (6)
+EGtWq.      Exp9            ::=                        Exp9 ">=" Exp10 ; -- (6)
+
+EEq.        Exp8            ::=                         Exp8 "==" Exp9 ; -- (3)
+ENEq.       Exp8            ::=                         Exp8 "!=" Exp9 ; -- (3)
+
+EAnd.       Exp4            ::=                         Exp4 "&&" Exp5 ; -- (6)
+EOr.        Exp3            ::=                         Exp3 "||" Exp4 ; -- (6)
+
+EAss.       Exp2            ::=                          Exp3 "=" Exp2 ; -- (3)
+EIncAss.    Exp2            ::=                         Exp3 "+=" Exp2 ; -- (3)
+EDecAss.    Exp2            ::=                         Exp3 "-=" Exp2 ; -- (3)
+
+ECond.      Exp2            ::=                 Exp3 "?" Exp3 ":" Exp2 ; -- (3)
+
+EThrow.     Exp1            ::=                           "throw" Exp1 ; -- (4)
+
+separator   nonempty        String                                  "" ; -- (1)
+separator                   Exp                                    "," ;
+
+-------------------------------------------------------------------------------
+
+coercions   Exp                                                     16 ;
+token       Id                        (letter (letter | digit | '_')*) ;
